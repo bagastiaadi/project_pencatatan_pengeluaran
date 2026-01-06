@@ -103,5 +103,10 @@ class Database {
     public function rollback() {
         return $this->conn->rollBack();
     }
+    
+    // Destructor - otomatis dipanggil saat object dihapus
+    public function __destruct() {
+        $this->conn = null;
+    }
 }
 ?>
