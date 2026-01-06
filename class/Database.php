@@ -78,5 +78,30 @@ class Database {
             die("Execute Error: " . $e->getMessage());
         }
     }
+        // Method untuk mendapatkan ID terakhir yang di-insert
+    public function lastInsertId() {
+        return $this->conn->lastInsertId();
+    }
+
+    // Method untuk hitung jumlah row yang terpengaruh
+    public function rowCount($sql, $params = []) {
+        $stmt = $this->query($sql, $params);
+        return $stmt->rowCount();
+    }
+
+    // Method untuk begin transaction
+    public function beginTransaction() {
+        return $this->conn->beginTransaction();
+    }
+
+    // Method untuk commit transaction
+    public function commit() {
+        return $this->conn->commit();
+    }
+
+    // Method untuk rollback transaction
+    public function rollback() {
+        return $this->conn->rollBack();
+    }
 }
 ?>
