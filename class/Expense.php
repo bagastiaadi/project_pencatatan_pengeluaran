@@ -55,5 +55,40 @@ class Expense {
             [$userId, $startDate, $endDate]
         );
     }
+    
+    public function create($userId, $categoryId, $amount, $description, $expenseDate) {
+        // Validasi input
+        if (empty($categoryId) || empty($amount) || empty($description) || empty($expenseDate)) {
+            return [
+                'success' => false,
+                'message' => 'Semua field harus diisi!'
+            ];
+        }
+
+        if ($amount <= 0) {
+            return [
+                'success' => false,
+                'message' => 'Jumlah pengeluaran harus lebih dari 0!'
+            ];
+        }
+
+        $insert = $this->db->execute(
+            "INSERT INTO expenses (user_id, category_id, amount, description, expense_date) VALUES (?, ?, ?, ?, ?)",
+            [$userId, $categoryId, $amount, $description, $expenseDate]
+        );
+
+        if ($insert) {
+            return [
+                'success' => true,
+                'message' => 'Pengeluaran berhasil ditambahkan!',
+                'id' => $this->db->lastInsertId()
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => 'Gagal menambahkan pengeluaran.'
+            ];
+        }
+    }
 }
 ?>
