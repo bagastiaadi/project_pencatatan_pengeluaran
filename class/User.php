@@ -230,4 +230,57 @@ class User {
             ];
         }
     }
+
+    public function changePassword($userId, $oldPassword, $newPassword) {
+        // Validasi input kosong
+        if (empty($oldPassword) || empty($newPassword)) {
+            return [
+                'success' => false,
+                'message' => 'Password lama dan baru harus diisi!'
+            ];
+        }
+
+        // Validasi panjang password baru minimal 6 karakter
+        if (strlen($newPassword) < 6) {
+            return [
+                'success' => false,
+                'message' => 'Password baru minimal 6 karakter!'
+            ];
+        }
+
+        // Ambil password lama dari database
+        $user = $this->db->single(
+            "SELECT password FROM users WHERE id = ?",
+            [$userId]
+        );
+
+        // Verifikasi password lama
+        if (!password_verify($oldPassword, $user['password'])) {
+            return [
+                'success' => false,
+                'message' => 'Password lama salah!'
+            ];
+        }
+
+        // Hash password baru
+        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+        // Update password di database
+        $update = $this->db->execute(
+            "UPDATE users SET password = ? WHERE id = ?",
+            [$hashedPassword, $userId]
+        );
+
+        if ($update) {
+            return [
+                'success' => true,
+                'message' => 'Password berhasil diubah!'
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengubah password.'
+            ];
+        }
+    }
 }
