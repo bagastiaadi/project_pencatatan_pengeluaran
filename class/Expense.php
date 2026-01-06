@@ -55,7 +55,7 @@ class Expense {
             [$userId, $startDate, $endDate]
         );
     }
-    
+
     public function create($userId, $categoryId, $amount, $description, $expenseDate) {
         // Validasi input
         if (empty($categoryId) || empty($amount) || empty($description) || empty($expenseDate)) {
@@ -87,6 +87,51 @@ class Expense {
             return [
                 'success' => false,
                 'message' => 'Gagal menambahkan pengeluaran.'
+            ];
+        }
+    }
+    
+    //Update pengeluaran
+    public function update($expenseId, $userId, $categoryId, $amount, $description, $expenseDate) {
+        // Validasi input
+        if (empty($categoryId) || empty($amount) || empty($description) || empty($expenseDate)) {
+            return [
+                'success' => false,
+                'message' => 'Semua field harus diisi!'
+            ];
+        }
+
+        if ($amount <= 0) {
+            return [
+                'success' => false,
+                'message' => 'Jumlah pengeluaran harus lebih dari 0!'
+            ];
+        }
+
+        // Cek apakah pengeluaran ini milik user
+        $expense = $this->getById($expenseId, $userId);
+        if (!$expense) {
+            return [
+                'success' => false,
+                'message' => 'Pengeluaran tidak ditemukan!'
+            ];
+        }
+
+        $update = $this->db->execute(
+            "UPDATE expenses SET category_id = ?, amount = ?, description = ?, expense_date = ? 
+             WHERE id = ? AND user_id = ?",
+            [$categoryId, $amount, $description, $expenseDate, $expenseId, $userId]
+        );
+
+        if ($update) {
+            return [
+                'success' => true,
+                'message' => 'Pengeluaran berhasil diupdate!'
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => 'Gagal mengupdate pengeluaran.'
             ];
         }
     }
