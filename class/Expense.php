@@ -163,5 +163,38 @@ class Expense {
             ];
         }
     }
+    // Total pengeluaran user
+    public function getTotalByUser($userId) {
+        $result = $this->db->single(
+            "SELECT COALESCE(SUM(amount), 0) as total FROM expenses WHERE user_id = ?",
+            [$userId]
+        );
+        return $result['total'];
+    }
+
+    // Total pengeluaran per kategori
+    public function getTotalByCategory($userId) {
+        return $this->db->fetchAll(
+            "SELECT c.name, COALESCE(SUM(e.amount), 0) as total, COUNT(e.id) as count
+             FROM categories c
+             LEFT JOIN expenses e ON c.id = e.category_id
+             WHERE c.user_id = ?
+             GROUP BY c.id, c.name
+             ORDER BY total DESC",
+            [$userId]
+        );
+    }
+
+    // Total pengeluaran per bulan
+    public function getTotalByMonth($userId, $year) {
+        return $this->db->fetchAll(
+            "SELECT MONTH(expense_date) as month, COALESCE(SUM(amount), 0) as total
+             FROM expenses
+             WHERE user_id = ? AND YEAR(expense_date) = ?
+             GROUP BY MONTH(expense_date)
+             ORDER BY month ASC",
+            [$userId, $year]
+        );
+    }
 }
 ?>
