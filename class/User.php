@@ -283,4 +283,20 @@ class User {
             ];
         }
     }
+
+    public function checkSessionTimeout() {
+        if (isset($_SESSION['login_time'])) {
+            $elapsed = time() - $_SESSION['login_time'];
+            
+            if ($elapsed > SESSION_LIFETIME) {
+                $this->logout();
+                return false;
+            }
+            
+            // Update login time
+            $_SESSION['login_time'] = time();
+        }
+        
+        return true;
+    }
 }
