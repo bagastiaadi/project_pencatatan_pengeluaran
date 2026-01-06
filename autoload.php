@@ -13,4 +13,32 @@ spl_autoload_register(function ($class_name) {
     }
 });
 
+// Start session
+if (session_status() === PHP_SESSION_NONE) {
+    session_name(SESSION_NAME);
+    session_start();
+}
+
+// method untuk verifikasi login
+function redirect($url) {
+    header("Location: " . BASE_URL . $url);
+    exit();
+}
+
+function isLoggedIn() {
+    return isset($_SESSION['user_id']);
+}
+
+function requireLogin() {
+    if (!isLoggedIn()) {
+        redirect('pages/login.php');
+    }
+}
+
+function requireGuest() {
+    if (isLoggedIn()) {
+        redirect('pages/dashboard.php');
+    }
+}
+
 ?>
