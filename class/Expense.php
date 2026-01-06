@@ -90,7 +90,7 @@ class Expense {
             ];
         }
     }
-    
+
     //Update pengeluaran
     public function update($expenseId, $userId, $categoryId, $amount, $description, $expenseDate) {
         // Validasi input
@@ -132,6 +132,34 @@ class Expense {
             return [
                 'success' => false,
                 'message' => 'Gagal mengupdate pengeluaran.'
+            ];
+        }
+    }
+    //Hapus pengeluaran
+    public function delete($expenseId, $userId) {
+        // Cek apakah pengeluaran ini milik user
+        $expense = $this->getById($expenseId, $userId);
+        if (!$expense) {
+            return [
+                'success' => false,
+                'message' => 'Pengeluaran tidak ditemukan!'
+            ];
+        }
+
+        $delete = $this->db->execute(
+            "DELETE FROM expenses WHERE id = ? AND user_id = ?",
+            [$expenseId, $userId]
+        );
+
+        if ($delete) {
+            return [
+                'success' => true,
+                'message' => 'Pengeluaran berhasil dihapus!'
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => 'Gagal menghapus pengeluaran.'
             ];
         }
     }
