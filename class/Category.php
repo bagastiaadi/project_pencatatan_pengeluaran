@@ -62,5 +62,53 @@ class Category {
             [$categoryId, $userId]
         );
     }
+    // UPDATE - Update kategori
+    public function update($categoryId, $userId, $name, $description = '') {
+        if (empty($name)) {
+            return [
+                'success' => false,
+                'message' => 'Nama kategori harus diisi!'
+            ];
+        }
+
+        // Cek apakah kategori ini milik user
+        $category = $this->getById($categoryId, $userId);
+        if (!$category) {
+            return [
+                'success' => false,
+                'message' => 'Kategori tidak ditemukan!'
+            ];
+        }
+
+        // Cek apakah nama kategori sudah digunakan kategori lain
+        $check = $this->db->single(
+            "SELECT id FROM categories WHERE user_id = ? AND name = ? AND id != ?",
+            [$userId, $name, $categoryId]
+        );
+
+        if ($check) {
+            return [
+                'success' => false,
+                'message' => 'Kategori dengan nama ini sudah ada!'
+            ];
+        }
+
+        $update = $this->db->execute(
+            "UPDATE categories SET name = ?, description = ? WHERE id = ? AND user_id = ?",
+            [$name, $description, $categoryId, $userId]
+        );
+
+        if ($update) {
+            return [
+                'success' => true,
+                'message' => 'Kategori berhasil diupdate!'
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => 'Gagal mengupdate kategori.'
+            ];
+        }
+    }
 }
 ?>
