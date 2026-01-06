@@ -157,4 +157,77 @@ class User {
             'message' => 'Logout berhasil!'
         ];
     }
+
+    public function getUserById($userId) {
+        return $this->db->single(
+            "SELECT id, username, email, created_at FROM users WHERE id = ?",
+            [$userId]
+        );
+    }
+
+    public function updateProfile($userId, $username, $email) {
+        // Validasi input kosong
+        if (empty($username) || empty($email)) {
+            return [
+                'success' => false,
+                'message' => 'Username dan email harus diisi!'
+            ];
+        }
+
+        // Validasi format email
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return [
+                'success' => false,
+                'message' => 'Format email tidak valid!'
+            ];
+        }
+
+        // Cek apakah username sudah digunakan user lain
+        $checkUsername = $this->db->single(
+            "SELECT id FROM users WHERE username = ? AND id != ?",
+            [$username, $userId]
+        );
+
+        if ($checkUsername) {
+            return [
+                'success' => false,
+                'message' => 'Username sudah digunakan!'
+            ];
+        }
+
+        // Cek apakah email sudah digunakan user lain
+        $checkEmail = $this->db->single(
+            "SELECT id FROM users WHERE email = ? AND id != ?",
+            [$email, $userId]
+        );
+
+        if ($checkEmail) {
+            return [
+                'success' => false,
+                'message' => 'Email sudah terdaftar!'
+            ];
+        }
+
+        // Update data user
+        $update = $this->db->execute(
+            "UPDATE users SET username = ?, email = ? WHERE id = ?",
+            [$username, $email, $userId]
+        );
+
+        if ($update) {
+            // Update session dengan data baru
+            $_SESSION['username'] = $username;
+            $_SESSION['email'] = $email;
+
+            return [
+                'success' => true,
+                'message' => 'Profile berhasil diupdate!'
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat update profile.'
+            ];
+        }
+    }
 }
