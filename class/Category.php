@@ -47,5 +47,20 @@ class Category {
             ];
         }
     }
+    // READ - Ambil semua kategori milik user
+    public function getAllByUser($userId) {
+        return $this->db->fetchAll(
+            "SELECT * FROM categories WHERE user_id = ? ORDER BY created_at DESC",
+            [$userId]
+        );
+    }
+
+    // READ - Ambil satu kategori berdasarkan ID
+    public function getById($categoryId, $userId) {
+        return $this->db->single(
+            "SELECT * FROM categories WHERE id = ? AND user_id = ?",
+            [$categoryId, $userId]
+        );
+    }
 }
 ?>
