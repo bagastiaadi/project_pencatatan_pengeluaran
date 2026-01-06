@@ -110,5 +110,13 @@ class Category {
             ];
         }
     }
+    // COUNT - Hitung jumlah kategori user
+    public function countByUser($userId) {
+        $result = $this->db->single(
+            "SELECT COUNT(*) as total FROM categories WHERE user_id = ?",
+            [$userId]
+        );
+        return $result['total'];
+    }
 }
 ?>
