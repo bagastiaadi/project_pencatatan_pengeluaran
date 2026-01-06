@@ -196,5 +196,13 @@ class Expense {
             [$userId, $year]
         );
     }
+    //Hitung jumlah pengeluaran user
+    public function countByUser($userId) {
+        $result = $this->db->single(
+            "SELECT COUNT(*) as total FROM expenses WHERE user_id = ?",
+            [$userId]
+        );
+        return $result['total'];
+    }
 }
 ?>
