@@ -118,5 +118,46 @@ class Category {
         );
         return $result['total'];
     }
+    // DELETE - Hapus kategori
+    public function delete($categoryId, $userId) {
+        // Cek apakah kategori ini milik user
+        $category = $this->getById($categoryId, $userId);
+        if (!$category) {
+            return [
+                'success' => false,
+                'message' => 'Kategori tidak ditemukan!'
+            ];
+        }
+
+        // Cek apakah kategori masih digunakan di pengeluaran
+        $check = $this->db->single(
+            "SELECT id FROM expenses WHERE category_id = ?",
+            [$categoryId]
+        );
+
+        if ($check) {
+            return [
+                'success' => false,
+                'message' => 'Kategori tidak bisa dihapus karena masih digunakan!'
+            ];
+        }
+
+        $delete = $this->db->execute(
+            "DELETE FROM categories WHERE id = ? AND user_id = ?",
+            [$categoryId, $userId]
+        );
+
+        if ($delete) {
+            return [
+                'success' => true,
+                'message' => 'Kategori berhasil dihapus!'
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => 'Gagal menghapus kategori.'
+            ];
+        }
+    }
 }
 ?>
