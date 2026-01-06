@@ -45,5 +45,38 @@ class Database {
     public function getConnection() {
         return $this->conn;
     }
+
+    // Method untuk execute query (SELECT)
+    public function query($sql, $params = []) {
+        try {
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute($params);
+            return $stmt;
+        } catch (PDOException $e) {
+            die("Query Error: " . $e->getMessage());
+        }
+    }
+
+    // Method untuk fetch single row
+    public function single($sql, $params = []) {
+        $stmt = $this->query($sql, $params);
+        return $stmt->fetch();
+    }
+
+    // Method untuk fetch multiple rows
+    public function fetchAll($sql, $params = []) {
+        $stmt = $this->query($sql, $params);
+        return $stmt->fetchAll();
+    }
+
+    // Method untuk execute INSERT, UPDATE, DELETE
+    public function execute($sql, $params = []) {
+        try {
+            $stmt = $this->conn->prepare($sql);
+            return $stmt->execute($params);
+        } catch (PDOException $e) {
+            die("Execute Error: " . $e->getMessage());
+        }
+    }
 }
 ?>
