@@ -134,13 +134,27 @@ class User {
                 true // HttpOnly flag untuk keamanan
             );
 
-            // Simpan token di database (opsional, untuk validasi lebih secure)
-            // Bisa ditambahkan tabel remember_tokens jika mau lebih aman
         }
 
         return [
             'success' => true,
             'message' => 'Login berhasil!'
+        ];
+    }
+
+    public function logout() {
+        // Hapus semua session
+        session_unset();
+        session_destroy();
+
+        // Hapus cookie remember me
+        if (isset($_COOKIE[COOKIE_NAME])) {
+            setcookie(COOKIE_NAME, '', time() - 3600, '/');
+        }
+
+        return [
+            'success' => true,
+            'message' => 'Logout berhasil!'
         ];
     }
 }
