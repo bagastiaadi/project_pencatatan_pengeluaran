@@ -1,9 +1,4 @@
 <?php
-// ======================================
-// File: includes/header.php
-// Header dengan navbar untuk semua halaman
-// ======================================
-
 // Ambil nama file saat ini untuk active menu
 $currentPage = basename($_SERVER['PHP_SELF']);
 ?>
